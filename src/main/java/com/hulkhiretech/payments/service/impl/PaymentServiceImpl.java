@@ -2,6 +2,7 @@ package com.hulkhiretech.payments.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hulkhiretech.payments.ExceptionHandling.PaymentValidator;
 import com.hulkhiretech.payments.Req.*;
 import com.hulkhiretech.payments.constant.Constant;
 import com.hulkhiretech.payments.http.HttpRequest;
@@ -39,12 +40,18 @@ public class PaymentServiceImpl implements PaymentService {
     private final TokenService tokenService;
     private final HttpServiceEngine httpServiceEngine;
     private final ObjectMapper objectMapper;
+    private  final PaymentValidator  paymentValidator;
 //    private final PayPalMinimalResponseDto minimalResponse;
 
     @Value("${createOrderUrl}")
     private String createOrderUrl;
 
     public PayPalMinimalResponseDto createOrder(UserOrderRequestDto userRequest) {
+
+        //check input is valid and not handle exception here
+
+        paymentValidator.validate(userRequest);
+
 
         log.info("Creating PayPal order for user input: {}", userRequest);
 
