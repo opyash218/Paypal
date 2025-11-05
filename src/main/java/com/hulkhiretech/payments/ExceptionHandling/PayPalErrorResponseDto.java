@@ -59,5 +59,6 @@ public class PayPalErrorResponseDto {
             return error;
 
         return "Unknown PayPal error occurred.";
+
     }
 }
