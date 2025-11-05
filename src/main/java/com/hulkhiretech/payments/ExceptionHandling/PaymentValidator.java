@@ -16,10 +16,10 @@ public class PaymentValidator {
 
     private void validateCurrency(String currency) {
         if (currency == null || currency.trim().isEmpty() ) {
-            throw new CustomValidationException(ErrorCode.INVALID_CURRENCY);
+            throw new CustomValidationException(ErrorCode.INVALID_CURRENCY, "Unknown PayPal error occurred");
         }
         if (!currency.equals("USD")) {
-            throw new CustomValidationException(ErrorCode.INVALID_CURRENCY_TYPE);
+            throw new CustomValidationException(ErrorCode.INVALID_CURRENCY_TYPE, "Unknown PayPal error occurred");
 
         }
     }
@@ -27,23 +27,23 @@ public class PaymentValidator {
     private void validateAmount(String amount) {
 
         if (amount == null || amount.isBlank()) {
-            throw new CustomValidationException(ErrorCode.INVALID_AMOUNT_NULL);
+            throw new CustomValidationException(ErrorCode.INVALID_AMOUNT_NULL, "Unknown PayPal error occurred");
         }
         double amt= Double.parseDouble(amount);
         if ( amt <= 0 )  {
-            throw new CustomValidationException(ErrorCode.INVALID_AMOUNT);
+            throw new CustomValidationException(ErrorCode.INVALID_AMOUNT, "Unknown PayPal error occurred");
         }
     }
 
     private void validateUrl(String url) {
         if (url == null || url.trim().isEmpty()) {
-            throw new CustomValidationException(ErrorCode.INVALID_URL);
+            throw new CustomValidationException(ErrorCode.INVALID_URL, "Unknown PayPal error occurred");
         }
     }
 
     private void validateCancelUrl(String cancelUrl) {
         if (cancelUrl == null || cancelUrl.trim().isEmpty()) {
-            throw new CustomValidationException(ErrorCode.INVALID_CANCEL_URL);
+            throw new CustomValidationException(ErrorCode.INVALID_CANCEL_URL, "Unknown PayPal error occurred");
         }
     }
 }

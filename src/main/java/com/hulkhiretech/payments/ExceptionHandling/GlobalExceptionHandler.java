@@ -18,7 +18,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(
                 ErrorResponse.builder()
                         .errorCode(error.getCode())
-                        .errorMessage(error.getMessage())
+                        .errorMessage(ex.getMessage())  // ✅ use the actual formatted dynamic message
                         .build(),
                 HttpStatus.BAD_REQUEST
         );

@@ -11,4 +11,10 @@ public class CustomValidationException extends RuntimeException {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }
+
+    public CustomValidationException(ErrorCode errorCode, String dynamicMessage) {
+        super(dynamicMessage);
+        this.errorCode = errorCode;
+    }
+
 }
