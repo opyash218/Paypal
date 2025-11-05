@@ -56,6 +56,7 @@ public class PaymentServiceImpl implements PaymentService {
         log.info("Access token retrieved: {}", accessToken);
 
 
+
         // ✅ 1. Map user request -> PayPal structure
         Amount amount = new Amount(userRequest.getCurrencyCode(), userRequest.getValue());
         PurchaseUnit purchaseUnit = new PurchaseUnit(amount);
