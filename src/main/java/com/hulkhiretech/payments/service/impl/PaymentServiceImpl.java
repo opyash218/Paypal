@@ -37,6 +37,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final HttpServiceEngine httpServiceEngine;
     private final ObjectMapper objectMapper;
     private final PaymentValidator paymentValidator;
+    private String accessToken="";
 //    private final PayPalMinimalResponseDto minimalResponse;
 
     @Value("${createOrderUrl}")
@@ -52,8 +53,9 @@ public class PaymentServiceImpl implements PaymentService {
 
         log.info("Creating PayPal order for user input: {}", userRequest);
 
-        String accessToken = tokenService.getAccessToken();
+        accessToken = tokenService.getAccessToken();
         log.info("Access token retrieved: {}", accessToken);
+
 
 
 
@@ -141,6 +143,7 @@ public class PaymentServiceImpl implements PaymentService {
                     log.error("Invalid PayPal response: missing required fields");
                 }
 
+
                 return minimalResponse;
 
 
@@ -190,6 +193,12 @@ public class PaymentServiceImpl implements PaymentService {
 
 
     }
+
+    public String getTransferToken() {
+        return accessToken;
+    }
+
+
 }
 
 
