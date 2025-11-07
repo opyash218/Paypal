@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PaymentValidator {
 
+
     public void validate(UserOrderRequestDto req) {
         validateCurrency(req.getCurrencyCode());
         validateAmount(req.getValue());
