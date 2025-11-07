@@ -30,6 +30,7 @@ public class PayPalErrorResponseDto {
             ErrorDetail d = details.get(0);
             String field = d.getField();
 
+            // Extract short field name if present
             if (field != null && field.contains("/")) {
                 String[] parts = field.split("/");
                 for (int i = parts.length - 1; i >= 0; i--) {
@@ -43,13 +44,20 @@ public class PayPalErrorResponseDto {
             String desc = d.getDescription() != null ? d.getDescription() : "";
             String issue = d.getIssue() != null ? d.getIssue() : "";
 
-            // 🧠 Make it user-friendly
-            field = field.replace("_", " ");
+            // Clean text
             desc = desc.replace("A required field / parameter is missing.", "missing");
+            if (field != null) field = field.replace("_", " ");
 
-            return String.format("%s is %s", field, desc.isBlank() ? issue.toLowerCase() : desc)
-                    .replaceAll("\\s+", " ")
-                    .trim();
+            // ✅ Smart formatting:
+            if (field == null || field.isBlank()) {
+                // no field name, return only description or issue
+                return (desc.isBlank() ? issue : desc).trim();
+            } else {
+                // normal case: "amount is missing"
+                return String.format("%s is %s", field, desc.isBlank() ? issue.toLowerCase() : desc)
+                        .replaceAll("\\s+", " ")
+                        .trim();
+            }
         }
 
         if (message != null && !message.isBlank())
@@ -59,6 +67,6 @@ public class PayPalErrorResponseDto {
             return error;
 
         return "Unknown PayPal error occurred.";
-
     }
+
 }

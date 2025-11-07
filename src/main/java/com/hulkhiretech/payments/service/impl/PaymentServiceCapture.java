@@ -1,7 +1,11 @@
 package com.hulkhiretech.payments.service.impl;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hulkhiretech.payments.ExceptionHandling.CustomValidationException;
+import com.hulkhiretech.payments.ExceptionHandling.ErrorCode;
+import com.hulkhiretech.payments.ExceptionHandling.PayPalErrorResponseDto;
 import com.hulkhiretech.payments.http.HttpRequest;
 import com.hulkhiretech.payments.http.HttpServiceEngine;
 
@@ -60,19 +64,54 @@ public class PaymentServiceCapture {
         ResponseEntity<String> response = httpServiceEngine.makeHttpCall(httpRequest);
         log.info("Received response from PayPal Capture Order: {}", response);
 
-        //✅ 6. convert response body to java object and return using object mapper
-        String captureOrderRes = response.getBody();
-        try {
-            captureOrderResponseDto capdto = objectMapper.readValue(captureOrderRes, captureOrderResponseDto.class);
-            return capdto;
+        if (response.getStatusCode().is2xxSuccessful()) {
+
+            //✅ 6. convert response body to java object and return using object mapper
+            String captureOrderRes = response.getBody();
+            try {
+                captureOrderResponseDto capdto = objectMapper.readValue(captureOrderRes, captureOrderResponseDto.class);
+                return capdto;
 
 
+            } catch (Exception e) {
 
-        } catch (Exception e) {
-
-            log.info("Error parsing capture order response: {}", e.getMessage());
-            throw new RuntimeException();
+                log.info("Error parsing capture order response: {}", e.getMessage());
+                throw new RuntimeException();
+            }
         }
+
+        if (response.getStatusCode().is4xxClientError() || response.getStatusCode().is5xxServerError()) {
+            String body = response.getBody();
+
+            PayPalErrorResponseDto errorDto;
+            errorDto = null;
+
+            try {
+                errorDto = objectMapper.readValue(body, PayPalErrorResponseDto.class);
+            } catch (JsonProcessingException e) {
+                log.info("fail in converting ");
+            }
+
+
+            String dynamicMsg = errorDto.getDynamicMessage();
+            String formattedMsg = ErrorCode.INVALID_PAYPAL_RESPONSE.formatMessage(dynamicMsg);
+
+            log.error("PayPal error [{}]: {}", ErrorCode.INVALID_PAYPAL_RESPONSE.getCode(), formattedMsg);
+
+// Throw custom exception for global handler
+            throw new CustomValidationException(ErrorCode.INVALID_PAYPAL_RESPONSE, formattedMsg);
+
+
+
+        }
+
+        throw new CustomValidationException(
+                ErrorCode.INVALID_PAYPAL_RESPONSE,
+                "Unknown PayPal error occurred at the end of create order process"
+        );
+
+
+
 
 //        throw new RuntimeException("Capture order failed");
 
